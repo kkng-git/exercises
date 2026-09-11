@@ -1,5 +1,7 @@
 """Public tests for the Alternating-Parity Subarrays assessment."""
 
+import argparse
+import sys
 import unittest
 
 from solution import countAlternatingParitySubarrays
@@ -29,4 +31,22 @@ class CountAlternatingParitySubarraysTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    parser = argparse.ArgumentParser(description="Run the public tests.")
+    parser.add_argument(
+        "--test",
+        metavar="NAME",
+        help="run one test method instead of the full suite",
+    )
+    args = parser.parse_args()
+
+    test_name = args.test
+    if test_name and "." not in test_name:
+        test_name = f"CountAlternatingParitySubarraysTests.{test_name}"
+
+    loader = unittest.defaultTestLoader
+    if test_name:
+        suite = loader.loadTestsFromName(test_name, sys.modules[__name__])
+    else:
+        suite = loader.loadTestsFromModule(sys.modules[__name__])
+    result = unittest.TextTestRunner(verbosity=2).run(suite)
+    raise SystemExit(not result.wasSuccessful())

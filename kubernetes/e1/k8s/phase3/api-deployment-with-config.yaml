@@ -6,7 +6,7 @@ metadata:
   labels:
     tags.datadoghq.com/env: lab
     tags.datadoghq.com/service: three-tier-api
-    tags.datadoghq.com/version: v1
+    tags.datadoghq.com/version: v2
 spec:
   replicas: 2
   selector:
@@ -18,14 +18,14 @@ spec:
         app: api-server
         tags.datadoghq.com/env: lab
         tags.datadoghq.com/service: three-tier-api
-        tags.datadoghq.com/version: v1
+        tags.datadoghq.com/version: v2
       annotations:
         ad.datadoghq.com/api-server.logs: >-
           [{"source":"python","service":"three-tier-api"}]
     spec:
       containers:
         - name: api-server
-          image: three-tier-api:local
+          image: three-tier-api:simulator-v2
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
@@ -78,8 +78,42 @@ spec:
             - name: DD_TRACE_AGENT_PORT
               value: "8126"
 
+            - name: DD_DOGSTATSD_PORT
+              value: "8125"
+
             - name: DD_LOGS_INJECTION
               value: "true"
 
             - name: DD_TRACE_SAMPLE_RATE
               value: "1.0"
+
+            - name: DD_RUNTIME_METRICS_ENABLED
+              value: "true"
+
+            - name: SLOW_MIN_SECONDS
+              value: "0.8"
+
+            - name: SLOW_MAX_SECONDS
+              value: "1.8"
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 3
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 20
+
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi

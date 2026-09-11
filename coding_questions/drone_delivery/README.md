@@ -32,3 +32,9 @@ with:
 ```bash
 python3 -m unittest -v test_solution.py
 ```
+
+To run one test:
+
+```bash
+python3 test_solution.py --test test_no_stations
+```

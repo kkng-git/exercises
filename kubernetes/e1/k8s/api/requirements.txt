@@ -1,3 +1,4 @@
 flask
 psycopg2-binary
 ddtrace>=3.12,<5
+datadog>=0.50,<1

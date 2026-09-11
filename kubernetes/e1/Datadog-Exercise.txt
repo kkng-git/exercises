@@ -1,0 +1,14 @@
+Datadog's purpose:
+    - Provide observability into our Kubernetes deployed application
+
+Metrics:
+    - Node, cluster, deployment, pod, container, CPU, memory and restart health
+    - To simulate this, I can force fail the app to create restart metrics
+
+Traces:
+    - Follows a request through API server and Database, showing latency, errors, and database spans
+    - I can send requests to the app and check the traces
+
+Logs:
+    - Collects API output and associates it with the correct service, environment, pod, and ideally a trace
+    - I can make sure that specific requests have expected outputs

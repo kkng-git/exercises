@@ -18,6 +18,10 @@ spec:
       - owner:kendrick-ng
 
   features:
+    dogstatsd:
+      hostPortConfig:
+        enabled: true
+
     apm:
       enabled: true
       hostPortConfig:

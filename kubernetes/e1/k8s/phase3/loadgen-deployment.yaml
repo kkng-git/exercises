@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simulator-loadgen
+  namespace: three-tier-app
+  labels:
+    tags.datadoghq.com/env: lab
+    tags.datadoghq.com/service: three-tier-loadgen
+    tags.datadoghq.com/version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simulator-loadgen
+  template:
+    metadata:
+      labels:
+        app: simulator-loadgen
+        tags.datadoghq.com/env: lab
+        tags.datadoghq.com/service: three-tier-loadgen
+        tags.datadoghq.com/version: v2
+      annotations:
+        ad.datadoghq.com/loadgen.logs: >-
+          [{"source":"python","service":"three-tier-loadgen"}]
+    spec:
+      containers:
+        - name: loadgen
+          image: three-tier-api:simulator-v2
+          imagePullPolicy: IfNotPresent
+          command: ["python", "loadgen.py"]
+          env:
+            - name: TARGET_URL
+              value: http://api-service:5000
+            - name: INTERVAL_SECONDS
+              value: "2"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 24Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
