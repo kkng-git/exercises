@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-server
+  namespace: three-tier-app
+  labels:
+    tags.datadoghq.com/env: lab
+    tags.datadoghq.com/service: three-tier-api
+    tags.datadoghq.com/version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api-server
+  template:
+    metadata:
+      labels:
+        app: api-server
+        tags.datadoghq.com/env: lab
+        tags.datadoghq.com/service: three-tier-api
+        tags.datadoghq.com/version: v1
+      annotations:
+        ad.datadoghq.com/api-server.logs: >-
+          [{"source":"python","service":"three-tier-api"}]
+    spec:
+      containers:
+        - name: api-server
+          image: three-tier-api:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: api-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: api-config
+                  key: DB_PORT
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: api-config
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_PASSWORD
+            - name: DD_ENV
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/env']
+
+            - name: DD_SERVICE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/service']
+
+            - name: DD_VERSION
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/version']
+
+            - name: DD_AGENT_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+
+            - name: DD_TRACE_AGENT_PORT
+              value: "8126"
+
+            - name: DD_LOGS_INJECTION
+              value: "true"
+
+            - name: DD_TRACE_SAMPLE_RATE
+              value: "1.0"

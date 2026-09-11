@@ -1,0 +1,23 @@
+Exercise:
+
+Create 3-tier server: 
+DB (sql) - 1 instance,
+api server 2 instances (py server that can connect to DB), 
+gateway (nginx) 2 instances is to route the api request to api server
+Add ingress config?
+
+1. Simulate crash loop and prove redudancy works.
+2. Learn and install Helm
+
+
+Architecture:
+
+Browser / curl
+localhost
+KIND port mapping
+NGINX Ingress controller
+Ingress rule
+api-service
+Python API Pods (2 replicas)
+Postgres service
+Postgres Pod with PersistentVolumeClaim
